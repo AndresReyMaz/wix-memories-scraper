@@ -1,3 +1,4 @@
+import re
 from itertools import takewhile
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
@@ -33,12 +34,26 @@ def get_author(bs):
         return 'not found'
 
 
+def get_image_uris(markup):
+    '''
+    Finds all the post's image uris, extracted from the JS code.
+    '''
+    uri_list = re.findall('static.wixstatic.com[^"&]*.jpg', markup)
+    # Place into a set to make unique.
+    uri_set = set(uri_list)
+    # Remove escape slashes.
+    return [re.sub(r'\\', '', uri) for uri in uri_set]
+
+
 try:
     html = urlopen('http://clarisseandandres.wixsite.com/wanderlust/single-post/2017/10/14/Ehrwald')
+    html_content = html.read()
 except HTTPError as e:
     print(e)
 else:    
-    bs = BeautifulSoup(html.read(), 'html.parser')
+    bs = BeautifulSoup(html_content, 'html.parser')
     print(get_title(bs))
     print("Written by: {}".format(get_author(bs)))
     print(get_main(bs))
+    for uri in get_image_uris(html_content.decode('utf-8')):
+        print(uri)
