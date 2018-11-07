@@ -1,2 +1,4 @@
 my_virtualenv
 ch*
+*~
+*.out
