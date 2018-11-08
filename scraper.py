@@ -68,8 +68,11 @@ else:
 
     # Download and save images.
     image_uris = get_image_uris(html_content.decode('utf-8'))
-    for i, uri in enumerate(image_uris):
+    i = 1
+    for uri in image_uris:
+        # Only save image if it's not a wix image.
         if 'mv2' in uri:
             with open(args['output'] + '/images/' + str(i) + '.jpg', 'wb+') as f:
                 f.write(urlopen('http://' + uri).read())
+                i += 1
 
